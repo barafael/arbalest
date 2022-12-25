@@ -21,8 +21,8 @@
 
 # Copyright (C) 2009 Marcus Dreier <m-rei@gmx.net>
 
-import pygame
 import string
+import pygame
 
 from pygame.locals import *
 from game.settings import *
@@ -33,7 +33,7 @@ class Inputbox:
         self.screen = screen
         self.question = question
         self.new_str = []
-        self.input_box(question + ": " + string.join(self.new_str, ""))
+        self.input_box(question + ": " + "".join(self.new_str))
 
     def input_box(self, msg):
         pygame.draw.rect(
@@ -80,8 +80,8 @@ class Inputbox:
                 return False
             elif key <= 127 and len(self.new_str) < 19:
                 self.new_str.append(chr(key))
-            self.input_box(self.question + ": " + string.join(self.new_str, ""))
-        return string.join(self.new_str, "")
+            self.input_box(self.question + ": " + "".join(self.new_str))
+        return "".join(self.new_str)
 
     def get_key(self):
         while 1:

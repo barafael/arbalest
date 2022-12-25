@@ -39,7 +39,7 @@ class Particle(pygame.sprite.Sprite):
         else:
             self.image = Settings.particle_image10
         self.rect = self.image.get_rect()
-        #        self.image, self.rect = load_image("explosion-10.png", (0,0,0))
+        # self.image, self.rect = load_image("explosion-10.png", (0,0,0))
         self.pos = pos
         self.impact_pos = pos
         self.size = size

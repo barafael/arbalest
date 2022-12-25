@@ -114,7 +114,7 @@ class Network:
     def recv(self):
         try:
             data = pickle.load(self.r_stream)
-            #            print(data)
+            # print(data)
             return data
         except:
             return False

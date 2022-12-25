@@ -537,14 +537,12 @@ class Game:
         elif self.started:
             if Settings.MAX_ROUNDS > 0:
                 txt = Settings.font.render(
-                    "Round %d of %d" % (self.round, Settings.MAX_ROUNDS),
+                    f"Round {self.round} of {Settings.MAX_ROUNDS}",
                     1,
                     (255, 255, 255),
                 )
             else:
-                txt = Settings.font.render(
-                    "Round %d" % (self.round), 1, (255, 255, 255)
-                )
+                txt = Settings.font.render(f"Round {self.round}", 1, (255, 255, 255))
             rect = txt.get_rect()
             rect.midbottom = (399, 594)
             self.screen.blit(txt, rect.topleft)
@@ -619,24 +617,24 @@ class Game:
             if c >= 0:
                 self.timeout = c
                 self.toggle_menu()
-                if self.menu == self.particles_menu:
-                    if c == "On":
-                        Settings.PARTICLES = True
-                        self.toggle_menu()
-                    if c == "Off":
-                        Settings.PARTICLES = False
-                        self.toggle_menu()
-                if self.menu == self.fullscreen_menu:
-                    if c == "On":
-                        self.fullscreen = True
-                        self.use_fullscreen()
-                        self.toggle_menu()
-                    if c == "Off":
-                        self.fullscreen = False
-                        self.use_window()
-                        self.toggle_menu()
-                if c == "Quit":
-                    self.q = True
+        if self.menu == self.particles_menu:
+            if c == "On":
+                Settings.PARTICLES = True
+                self.toggle_menu()
+            if c == "Off":
+                Settings.PARTICLES = False
+                self.toggle_menu()
+        if self.menu == self.fullscreen_menu:
+            if c == "On":
+                self.fullscreen = True
+                self.use_fullscreen()
+                self.toggle_menu()
+            if c == "Off":
+                self.fullscreen = False
+                self.use_window()
+                self.toggle_menu()
+        if c == "Quit":
+            self.q = True
         elif c == "Back":
             self.toggle_menu()
         elif c == "Start":
@@ -676,7 +674,7 @@ class Game:
             self.menu = self.net_menu
         elif c == "Host a game":
             self.menu = self.net_host_menu
-            threading.Thread(self.host_game_init, ())
+            threading.Thread(target=self.host_game_init)
         elif c == "Connect to a host":
             in_box = Inputbox(self.screen, "Hostname")
             hostname = in_box.ask()
