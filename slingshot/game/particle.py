@@ -22,12 +22,12 @@
 # Copyright (C) 2009 Marcus Dreier <m-rei@gmx.net>
 # Copyright (C) 2010 Ryan Kavanagh <ryanakca@kubuntu.org>
 
+import math
+from random import randint
+import pygame
+
 from game.settings import *
 from game.general import *
-import pygame
-import math
-from math import sqrt
-from random import randint
 
 
 class Particle(pygame.sprite.Sprite):
@@ -71,7 +71,6 @@ class Particle(pygame.sprite.Sprite):
                     0 if we've hit a planet
                     1 otherwise
         @rtype: int
-
         """
         self.flight = self.flight - 1
 
@@ -154,8 +153,8 @@ class Particle(pygame.sprite.Sprite):
                     0,
                 )
                 self.v = (self.v[0], -self.v[1])
-        #                print self.pos
-        #                print self.last_pos
+        # print(self.pos)
+        # print(self.last_pos)
 
         self.rect.center = (round(self.pos[0]), round(self.pos[1]))
         return 1
@@ -223,16 +222,12 @@ class Missile(Particle):
         return result
 
     def draw_status(self, screen):
-        txt = Settings.font.render(
-            "Power penalty: %d" % (-self.score), 1, (255, 255, 255)
-        )
+        txt = Settings.font.render(f"Power penalty: {-self.score}", 1, (255, 255, 255))
         rect = txt.get_rect()
         rect.midtop = (399, 5)
         screen.blit(txt, rect.topleft)
         if self.flight >= 0:
-            txt = Settings.font.render(
-                "Timeout in %d" % (self.flight), 1, (255, 255, 255)
-            )
+            txt = Settings.font.render(f"Timeout in {self.flight}", 1, (255, 255, 255))
         else:
             txt = Settings.font.render("Shot timed out...", 1, (255, 255, 255))
         rect = txt.get_rect()

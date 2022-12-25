@@ -22,11 +22,11 @@
 # Copyright (C) 2009 Marcus Dreier <m-rei@gmx.net>
 # Copyright (C) 2010 Ryan Kavanagh <ryanakca@kubuntu.org>
 
-import pygame
-from pygame.locals import *
 from math import sqrt
 import os.path
+import pygame
 
+from pygame.locals import *
 from game.settings import Settings
 
 
@@ -34,34 +34,15 @@ def load_image(name, colorkey=None):
     fullname = os.path.join(Settings.DATA_PATH, name)
     try:
         image = pygame.image.load(fullname)
-    except pygame.error:
+    except pygame.error as exc:
         print("Cannot load image:", fullname)
-        raise SystemExit
+        raise SystemExit from exc
     image = image.convert_alpha()
     if colorkey is not None:
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, RLEACCEL)
     return image, image.get_rect()
-
-
-# def sgn(x):
-#    if x < 0:
-#        return -1
-#    else:
-#        return 1
-
-# def get_intersect(center, r, pos1, pos2):
-#    dx = pos2[0] - pos1[0]
-#    dy = pos2[1] - pos1[1]
-#    dr = math.sqrt(dx**2 + dy**2)
-#    D = pos1[0]*pos2[1] - pos2[0]*pos1[1]
-#    delta = r**2 * dr**2 - D**2
-#    if delta < 0:
-#        return (0.0,0.0)
-#    x = center[0] + (D * dy + sgn(dy) * dx * math.sqrt(delta)) / dr**2
-#    y = center[1] + (-D * dx + abs(dy) * math.sqrt(delta)) / dr**2
-#    return (x,y)
 
 
 def get_intersect(center, r, pos1, pos2):
@@ -75,10 +56,10 @@ def get_intersect(center, r, pos1, pos2):
     b = 2 * (dx * px - dx * cx + dy * py - dy * cy)
     c = -2 * cx * px - 2 * cy * py + px**2 + py**2 + cx**2 + cy**2 - r**2
     D = b**2 - 4 * a * c
-    #    print center, r
-    #    print pos1, pos2
-    #    print dx, dy
-    #    print a, b, c, D
+    # print(center, r)
+    # print(pos1, pos2)
+    # print(dx, dy)
+    # print(a, b, c, D)
     if D < 0:
         return (4000.0, 3000.0)
     alpha = (-b + sqrt(D)) / (2 * a)
@@ -86,7 +67,7 @@ def get_intersect(center, r, pos1, pos2):
         alpha = (-b - sqrt(D)) / (2 * a)
     alpha = alpha - 0.05
     pos = (px + alpha * dx, py + alpha * dy)
-    #    print pos
+    # print(pos)
     return pos
 
 

@@ -22,11 +22,10 @@
 # Copyright (C) 2009 Marcus Dreier <m-rei@gmx.net>
 # Copyright (C) 2010 Ryan Kavanagh <ryanakca@kubuntu.org>
 
-import pygame
 import math
 from random import randint
+import pygame
 
-from math import sqrt
 from game.settings import *
 from game.general import *
 
@@ -57,7 +56,7 @@ class Planet(pygame.sprite.Sprite):
 
         self.type = "Planet"
 
-        if n == None and planets != None:
+        if n is None and planets is not None:
             unique = False
             while not unique:
                 unique = True
@@ -68,11 +67,11 @@ class Planet(pygame.sprite.Sprite):
         else:
             self.n = n
 
-        filename = get_data_path("planet_%d.png" % (self.n))
+        filename = get_data_path(f"planet_{self.n}.png")
         self.orig, self.rect = load_image(filename, (0, 0, 0))
         self.image = self.orig
 
-        if radius == None or mass == None or pos == None:
+        if radius is None or mass is None or pos is None:
             positioned = False
             while not positioned:
                 self.mass = randint(8, 512)
@@ -136,14 +135,14 @@ class Planet(pygame.sprite.Sprite):
         self.image.set_alpha(255 - round(f * 2.55))
 
 
-#    def fade(self):
-#        self.image = self.fade_image
-#        self.image.blit(self.orig, (0,0))
-#        for i in range(1, f):
-#            r = round(self.r / 10)
-#            pygame.draw.circle(self.image, (0,0,0,0), (randint(r, round(2 * self.r) - r), randint(r, round(2 * self.r) - r)), r)
-#            for j in range(0, self.r):
-#                self.image.set_at((randint(0, round(self.r * 2)), randint(0, round(self.r * 2))), (0,0,0,0))
+# def fade(self):
+#     self.image = self.fade_image
+#     self.image.blit(self.orig, (0,0))
+#     for i in range(1, f):
+#         r = round(self.r / 10)
+#         pygame.draw.circle(self.image, (0,0,0,0), (randint(r, round(2 * self.r) - r), randint(r, round(2 * self.r) - r)), r)
+#         for j in range(0, self.r):
+#             self.image.set_at((randint(0, round(self.r * 2)), randint(0, round(self.r * 2))), (0,0,0,0))
 
 
 class Blackhole(Planet):
@@ -157,7 +156,7 @@ class Blackhole(Planet):
         self.image.set_alpha(0)
         self.rect = self.image.get_rect()
 
-        if n == None and planets != None:
+        if n is None and planets is not None:
             unique = False
             while not unique:
                 unique = True
@@ -171,7 +170,7 @@ class Blackhole(Planet):
         else:
             self.n = n
 
-        if radius == None or mass == None or pos == None:
+        if radius is None or mass is None or pos is None:
             positioned = False
             while not positioned:
                 # We can't accurately represent blackholes in

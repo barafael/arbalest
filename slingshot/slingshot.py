@@ -31,6 +31,12 @@
 # Copyright (C) 2009 Marcus Dreier <m-rei@gmx.net>
 # Copyright (C) 2010 Ryan Kavanagh <ryanakca@kubuntu.org>
 
+import os
+import sys
+import threading
+from random import randint
+import pygame
+
 from game.inputbox import *
 from game.network import *
 from game.menu import *
@@ -39,14 +45,8 @@ from game.planet import *
 from game.player import *
 from game.general import *
 from game.settings import *
-import pygame
 from pygame.locals import *
-import os
-import sys
-import time
-import threading
 
-from random import randint
 
 sys.path.insert(0, "/usr/share/games")
 
@@ -71,7 +71,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.screen = pygame.display.set_mode((800, 600))
-        icon, rect = load_image("icon64x64.png", (0, 0, 0))
+        icon, _ = load_image("icon64x64.png", (0, 0, 0))
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Slingshot")
 
@@ -83,9 +83,9 @@ class Game:
         )
 
         Settings.menu_background, Settings.menu_rect = load_image("menu.png", (0, 0, 0))
-        Settings.box, rect = load_image("box.png", (0, 0, 0))
-        Settings.tick, rect = load_image("tick.png", (0, 0, 0))
-        Settings.tick_inactive, rect = load_image("tick_inactive.png", (0, 0, 0))
+        Settings.box, _ = load_image("box.png", (0, 0, 0))
+        Settings.tick, _ = load_image("tick.png", (0, 0, 0))
+        Settings.tick_inactive, _ = load_image("tick_inactive.png", (0, 0, 0))
 
         self.trail_screen = pygame.Surface(self.screen.get_size())
         self.trail_screen = self.trail_screen.convert()
@@ -101,7 +101,7 @@ class Game:
         self.dim_screen = self.dim_screen.convert_alpha()
         # self.dim_screen.fill((0,0,0))
 
-        self.background, r = load_image("backdrop.png")
+        self.background, _ = load_image("backdrop.png")
 
         self.players = (Dummy(), Player(1), Player(2))
         self.playersprites = pygame.sprite.RenderPlain(
@@ -267,7 +267,7 @@ class Game:
         Settings.MAX_BLACKHOLES = self.max_blackholes
 
         # is there an old network game but the new is none
-        if self.net_play() and net_client == False and net_host == False:
+        if self.net_play() and not net_client and not net_host:
             self.net.close()
 
         self.net_client = net_client
@@ -325,7 +325,7 @@ class Game:
             self.player = 2
 
         if self.net_play() and not self.active_net_player():
-            threading.Thread.start_new_thread(self.thread_job, ())
+            threading.Thread(self.thread_job, ())
 
         self.show_round = 100
         if Settings.INVISIBLE:
@@ -337,7 +337,7 @@ class Game:
             self.host_round_init()
 
     def toggle_menu(self):
-        if self.menu == None:
+        if self.menu is None:
             self.menu = self.main_menu
         elif self.menu == self.main_menu:
             self.menu = None
@@ -366,12 +366,12 @@ class Game:
         else:
             self.menu = self.main_menu
 
-        #        if self.menu == self.main_menu:
-        #            self.menu.reset()
-        if self.menu != None:
+        # if self.menu == self.main_menu:
+        #     self.menu.reset()
+        if self.menu is not None:
             self.menu.reset()
 
-        if self.menu == None:
+        if self.menu is None:
             pygame.key.set_repeat(Settings.KEY_DELAY, Settings.KEY_REPEAT)
             self.started = True
         else:
@@ -383,22 +383,22 @@ class Game:
                 nn = n / 2
             else:
                 nn = n
-            for i in range(nn):
-                self.particlesystem.add(Particle(pos, size))
+        # for i in range(nn):
+        # self.particlesystem.add(Particle(pos, size))
 
     def create_planets(self, planetlist=None):
         result = pygame.sprite.RenderPlain()
 
-        if planetlist == None:
+        if planetlist is None:
             if Settings.MAX_BLACKHOLES > 0:
                 n = randint(1, Settings.MAX_BLACKHOLES)
-                for i in range(n):
+                for _ in range(n):
                     result.add(Blackhole(result, self.background))
             else:
                 # Only have planets if we don't have any
                 # blackholes.
                 n = randint(2, Settings.MAX_PLANETS)
-                for i in range(n):
+                for _ in range(n):
                     result.add(Planet(result, self.background))
         else:
             for p in planetlist:
@@ -487,15 +487,15 @@ class Game:
             self.planetsprites.draw(self.screen)
         self.screen.blit(self.trail_screen, (0, 0))
         self.playersprites.draw(self.screen)
-        #        self.players[1].draw(self.screen)
-        #        self.players[2].draw(self.screen)
-        #        print self.particlesystem
+        # self.players[1].draw(self.screen)
+        # self.players[2].draw(self.screen)
+        # print(self.particlesystem)
         if Settings.PARTICLES:
             self.particlesystem.draw(self.screen)
         if self.firing:
             if self.missile.visible():
                 self.missilesprite.draw(self.screen)
-        #        print self.planetsprites
+        # print(self.planetsprites)
         if self.firing:
             if not self.missile.visible():
                 self.draw_zoom()
@@ -552,7 +552,7 @@ class Game:
         if self.started and not self.game_over:
             if self.show_round > 30:
                 txt = Settings.round_font.render(
-                    "Round %d" % (self.round), 1, (255, 255, 255)
+                    f"Round {self.round}", 1, (255, 255, 255)
                 )
                 tmp = pygame.Surface(txt.get_size())
                 tmp = tmp.convert_alpha()
@@ -569,7 +569,7 @@ class Game:
                 self.screen.blit(tmp, rect.topleft)
                 self.show_round /= 1.04
 
-        if not self.menu == None:
+        if self.menu is not None:
             if self.menu.dim:
                 self.screen.blit(self.dim_screen, (0, 0))
             img = self.menu.draw()
@@ -582,14 +582,14 @@ class Game:
     def update_particles(self):
         if Settings.PARTICLES:
             for p in self.particlesystem:
-                #            print p.get_pos()
+                # print(p.get_pos())
                 if p.update(self.planetsprites) == 0 or p.flight < 0:
                     if p.flight >= 0 and p.in_range():
                         if p.get_size() == 10:
                             self.create_particlesystem(
                                 p.get_impact_pos(), Settings.n_PARTICLES_5, 5
                             )
-                    #                print "removing: ", p.get_pos()
+                    # print("removing: ", p.get_pos())
                     self.particlesystem.remove(p)
                 if p.flight > Settings.MAX_FLIGHT:
                     self.particlesystem.remove(p)
@@ -676,11 +676,11 @@ class Game:
             self.menu = self.net_menu
         elif c == "Host a game":
             self.menu = self.net_host_menu
-            threading.Thread.start_new_thread(self.host_game_init, ())
+            threading.Thread(self.host_game_init, ())
         elif c == "Connect to a host":
             in_box = Inputbox(self.screen, "Hostname")
             hostname = in_box.ask()
-            if hostname != False:
+            if hostname is not False:
                 self.client_game_init(hostname)
         elif c == "Game options":
             self.menu = self.mode_menu
@@ -724,7 +724,7 @@ class Game:
         if self.net_play() and not self.active_net_player():
             threading.start_new_thread(self.thread_job, ())
 
-        if not self.menu == None:
+        if self.menu is not None:
             self.menu_action()
         if self.players[1].shot or self.players[2].shot:
             if self.players[1].shot:
@@ -734,7 +734,7 @@ class Game:
             pygame.key.set_repeat()
             if not self.round_over:
                 self.end_round()
-        if self.menu == None:
+        if self.menu is None:
             self.started = True
 
         self.bounce_count += self.bounce_count_inc
@@ -754,13 +754,13 @@ class Game:
         for i in range(1, 3):
             if self.players[i].shot:
                 if self.player == 3 - i:
-                    message = "Player %d killed self" % (i)
+                    message = f"Player {i} killed self"
                     score = Settings.SELFHIT
-                    score_message = "%d deducted from score" % (score)
+                    score_message = f"{score} deducted from score"
                     self.players[i].add_score(-score)
                     killed_self = True
                 else:
-                    message = "Player %d killed player %d" % ((3 - i), i)
+                    message = f"Player {3 - i} killed player {i}"
                     if self.players[3 - i].attempts == 1:
                         bonus = Settings.QUICKSCORE1
                     elif self.players[3 - i].attempts == 2:
@@ -771,7 +771,7 @@ class Game:
                         bonus = 0
                     killed_self = False
                     score = power_penalty + bonus + Settings.HITSCORE
-                    score_message = "%d added to score" % (score)
+                    score_message = "{score} added to score"
                     self.players[3 - i].add_score(score)
 
                 if not killed_self:
@@ -811,11 +811,11 @@ class Game:
 
                 if not killed_self:
                     msg = Settings.font.render(
-                        "%d" % (Settings.HITSCORE), 1, (255, 255, 255)
+                        f"{Settings.HITSCORE}", 1, (255, 255, 255)
                     )
                 else:
                     msg = Settings.font.render(
-                        "%d" % (Settings.SELFHIT), 1, (255, 255, 255)
+                        f"{Settings.SELFHIT}", 1, (255, 255, 255)
                     )
                 rect = msg.get_rect()
                 rect.topright = (399, 65 + offset1)
@@ -827,7 +827,7 @@ class Game:
                     rect.topleft = (50, 85 + offset1)
                     self.end_round_msg.blit(msg, rect.topleft)
 
-                    msg = Settings.font.render("%d" % (bonus), 1, (255, 255, 255))
+                    msg = Settings.font.render(f"{bonus}", 1, (255, 255, 255))
                     rect = msg.get_rect()
                     rect.topright = (399, 85 + offset1)
                     self.end_round_msg.blit(msg, rect.topleft)
@@ -837,9 +837,7 @@ class Game:
                     rect.topleft = (50, 105 + offset1)
                     self.end_round_msg.blit(msg, rect.topleft)
 
-                    msg = Settings.font.render(
-                        "%d" % (power_penalty), 1, (255, 255, 255)
-                    )
+                    msg = Settings.font.render(f"{power_penalty}", 1, (255, 255, 255))
                     rect = msg.get_rect()
                     rect.topright = (399, 105 + offset1)
                     self.end_round_msg.blit(msg, rect.topleft)
@@ -861,7 +859,7 @@ class Game:
                     Settings.font.set_bold(True)
                     if winner != 0:
                         msg = Settings.font.render(
-                            "Player %d has won the game" % (winner), 1, (255, 255, 255)
+                            f"Player {winner} has won the game", 1, (255, 255, 255)
                         )
                     else:
                         msg = Settings.font.render(
@@ -898,7 +896,7 @@ class Game:
     def run(self):
         while not self.q:
             self.clock.tick(Settings.FPS)
-            #            print clock.get_fps()
+            # print(self.clock.get_fps())
 
             for event in self.event_check():
                 if event.type == QUIT:
@@ -907,7 +905,7 @@ class Game:
                     if event.key == K_ESCAPE:
                         self.toggle_menu()
 
-                    if self.menu == None and (
+                    if self.menu is None and (
                         not self.net_play() or self.active_net_player()
                     ):
                         if (
@@ -952,7 +950,7 @@ class Game:
                             elif event.key == K_RIGHT:
                                 self.change_angle(a)
 
-                        if event.key == K_RETURN or event.key == K_SPACE:
+                        if event.key in [K_RETURN, K_SPACE]:
                             if self.net_play():
                                 if (
                                     self.net.send(
@@ -982,7 +980,7 @@ class Game:
                                     self.menu = self.net_error_menu
                                     self.net.close()
 
-                    elif self.menu != None:
+                    elif self.menu is not None:
                         if event.key == K_UP:
                             self.menu.up()
                         elif event.key == K_DOWN:
@@ -1079,10 +1077,10 @@ class Game:
                 f.write("Fullscreen: 1\n")
             else:
                 f.write("Fullscreen: 0\n")
-        f.write("Max_Planets: %d\n" % (self.max_planets))
-        f.write("Max_Blackholes: %d\n" % (self.max_blackholes))
-        f.write("Timeout: %d\n" % (self.timeout))
-        f.write("Rounds: %d\n" % (self.max_rounds))
+        f.write(f"Max_Planets: {self.max_planets}\n")
+        f.write(f"Max_Blackholes: {self.max_blackholes}\n")
+        f.write(f"Timeout: {self.timeout}\n")
+        f.write(f"Rounds: {self.max_rounds}\n")
         f.close()
 
     def net_play(self):
@@ -1092,12 +1090,7 @@ class Game:
             return False
 
     def active_net_player(self):
-        if (
-            self.player == 1
-            and self.net_client == True
-            or self.player == 2
-            and self.net_host == True
-        ):
+        if self.player == 1 and self.net_client or self.player == 2 and self.net_host:
             return True
         else:
             return False
@@ -1110,7 +1103,7 @@ class Game:
             # Player want no network play anymore
             if not self.net_play():
                 break
-            if player_event == False:
+            if not player_event:
                 self.net.close()
                 self.menu = self.net_error_menu
                 break
@@ -1118,13 +1111,13 @@ class Game:
             self.change_angle(player_event[0] - self.players[self.player].get_angle())
             self.change_power(player_event[1] - self.players[self.player].get_power())
 
-            if player_event[2] == True:
+            if player_event[2]:
                 self.fire()
 
             self.update()
             self.draw()
 
-            if player_event[2] == True:
+            if player_event[2]:
                 break
             self.lock.release()
         self.lock.release()
@@ -1151,7 +1144,7 @@ class Game:
             if ret != -1:
                 break
 
-        if ret != False:
+        if not ret:
             packet = (
                 self.bounce,
                 self.fixed_power,
@@ -1162,7 +1155,7 @@ class Game:
                 self.max_rounds,
                 self.max_blackholes,
             )
-            if self.net.send(packet) == False:
+            if not self.net.send(packet):
                 self.menu = self.net_error_menu
                 self.net.close()
                 return
@@ -1231,11 +1224,11 @@ class Game:
             self.net.close()
         return ret
 
-        def use_fullscreen(self):
-            pygame.display.set_mode((0, 0), pygame.FULLSCREEN | pygame.NOFRAME)
+    def use_fullscreen(self):
+        pygame.display.set_mode((0, 0), FULLSCREEN | NOFRAME)
 
-        def use_window(self):
-            pygame.display.set_mode((800, 600))
+    def use_window(self):
+        pygame.display.set_mode((800, 600))
 
 
 def main():

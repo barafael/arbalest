@@ -158,7 +158,7 @@ class Menu:
             if i == self.selected:
                 color = (self.count, self.count, 255)
             else:
-                if self.items[i][3] == True:
+                if self.items[i][3]:
                     color = (0, 0, 255)
                 else:
                     color = (75, 75, 75)

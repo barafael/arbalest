@@ -22,10 +22,11 @@
 # Copyright (C) 2009 Marcus Dreier <m-rei@gmx.net>
 # Copyright (C) 2010 Ryan Kavanagh <ryanakca@kubuntu.org>
 
-import pygame
-from random import randint
-
 import math
+
+from random import randint
+import pygame
+
 from game.settings import *
 from game.general import *
 
@@ -49,7 +50,7 @@ class Player(pygame.sprite.Sprite):
             self.orig, self.rect = load_image("red_ship.png", (0, 0, 0))
             self.color = (209, 170, 133)
             self.rect = pygame.Rect(0, 0, 40, 33)
-            if y_coord == None:
+            if y_coord is None:
                 self.rect.midleft = (20, randint(100, 500))
             else:
                 self.rect.midleft = (20, y_coord)
@@ -60,7 +61,7 @@ class Player(pygame.sprite.Sprite):
             self.orig, self.rect = load_image("blue_ship.png", (0, 0, 0))
             self.color = (132, 152, 192)
             self.rect = pygame.Rect(0, 0, 40, 33)
-            if y_coord == None:
+            if y_coord is None:
                 self.rect.midright = (780, randint(100, 500))
             else:
                 self.rect.midright = (780, y_coord)
@@ -97,14 +98,14 @@ class Player(pygame.sprite.Sprite):
             self.rel_rot -= 360
         if self.rel_rot < 0:
             self.rel_rot += 360
-        #        if Settings.ROTATE:
-        #            center = self.rect.center
-        #            self.image = pygame.transform.rotate(self.orig, -self.rel_rot)
-        #            self.image = self.image.convert_alpha()
-        #            self.rect = self.image.get_rect(center = center)
+        # if Settings.ROTATE:
+        #     center = self.rect.center
+        #     self.image = pygame.transform.rotate(self.orig, -self.rel_rot)
+        #     self.image = self.image.convert_alpha()
+        #     self.rect = self.image.get_rect(center = center)
 
         center = self.rect.center
-        # print "center0: (%d,%d)" %(self.rect.center[0], self.rect.center[1])
+        # print("center0: (%d,%d)" %(self.rect.center[0], self.rect.center[1]))
 
         img1 = round((self.rel_rot + 22.5) / 45 - 0.49) % 8
         img2 = round(self.rel_rot / 45 - 0.49) % 8
@@ -131,12 +132,12 @@ class Player(pygame.sprite.Sprite):
 
         image1.blit(tmp, (0, 0))
 
-        #        self.image = pygame.transform.rotate(image1, -self.rel_rot)
+        # self.image = pygame.transform.rotate(image1, -self.rel_rot)
         self.image = pygame.transform.rotozoom(image1, -self.rel_rot, 1.0)
         self.rect = self.image.get_rect()
-        # print "center1: (%d,%d)" %(self.rect.center[0], self.rect.center[1])
+        # print("center1: (%d,%d)" %(self.rect.center[0], self.rect.center[1]))
         self.rect.center = center
-        # print "center2: (%d,%d)" %(self.rect.center[0], self.rect.center[1])
+        # print("center2: (%d,%d)" %(self.rect.center[0], self.rect.center[1]))
 
     def change_power(self, p):
         if not Settings.FIXED_POWER:
@@ -225,8 +226,8 @@ class Player(pygame.sprite.Sprite):
             f = (self.rel_rot - img1 * 45.0) / 45.0
         else:
             f = ((img2 + 1) * 45.0 - self.rel_rot) / 45.0
-        #            if img2 == 7:
-        #                f = f - 8.0
+        # if img2 == 7:
+        #     f = f - 8.0
 
         print(img1)
         print(img2)
@@ -236,7 +237,7 @@ class Player(pygame.sprite.Sprite):
         rect2 = pygame.Rect(img2 * 40, 0, 40, 33)
         image1 = self.orig.subsurface(rect1)
         image2 = self.orig.subsurface(rect2)
-        #        image1.set_alpha(round(255.0 * (1.0 - f)))
+        # image1.set_alpha(round(255.0 * (1.0 - f)))
         image1 = image1.convert_alpha()
         image2 = image2.convert_alpha()
 

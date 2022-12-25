@@ -22,7 +22,6 @@
 # Copyright (C) 2009 Marcus Dreier <m-rei@gmx.net>
 
 import socket
-import sys
 
 import pickle
 
@@ -105,7 +104,7 @@ class Network:
             self.r_stream = self.s.makefile("rb")
 
     def send(self, data):
-        #       print(data)
+        # print(data)
         try:
             pickle.dump(data, self.w_stream, 1)
             self.w_stream.flush()
