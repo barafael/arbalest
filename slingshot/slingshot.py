@@ -43,14 +43,14 @@ from random import randint
 
 sys.path.insert(0, '/usr/share/games')
 
-from slingshot.settings import *
-from slingshot.general import *
-from slingshot.player import *
-from slingshot.planet import *
-from slingshot.particle import *
-from slingshot.menu import *
-from slingshot.network import *
-from slingshot.inputbox import *
+from game.settings import *
+from game.general import *
+from game.player import *
+from game.planet import *
+from game.particle import *
+from game.menu import *
+from game.network import *
+from game.inputbox import *
 
 
 #class Blackhole(object):
